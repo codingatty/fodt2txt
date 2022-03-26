@@ -12,7 +12,7 @@ namespace fodt2txt
             XmlDocument doc = null;
 
             fodt_contents = getXMLStdinAsString();
-            
+
             if (fodt_contents != null) 
             {
                 doc = makeXMLDoc(fodt_contents);
@@ -20,7 +20,36 @@ namespace fodt2txt
 
             if (doc != null)
             {
-                Console.WriteLine("Yo: {0}", doc.InnerText);
+                Console.WriteLine("makeXMLDoc worked");
+                var ns_manager = new XmlNamespaceManager(doc.NameTable);
+                ns_manager.AddNamespace("text", "urn:oasis:names:tc:opendocument:xmlns:text:1.0");
+            
+                XmlElement root = doc.DocumentElement;
+                if (root.HasChildNodes && false){                   // && false is kludge to skip this, keeping for now in case I need to go back
+                    Console.WriteLine("has child nodes");
+                    XmlNodeList nodes = root.ChildNodes;
+                    // XmlNodeList nodes = root.SelectNodes("text:p", ns_manager);
+                    foreach (XmlNode node in nodes)
+                    {
+                        Console.WriteLine("in foreach");
+                        Console.WriteLine("{0}", node.InnerText);
+                    }
+                }
+
+                XmlNodeList nodes2 = doc.GetElementsByTagName("*");
+                foreach (XmlNode node in nodes2)
+                    {
+                        // Console.WriteLine("in foreach"); 
+                        Console.WriteLine("{0}", node.Name);
+                        if (node.Name == "text:p")
+                        {
+                            // Console.WriteLine("{0}", node.InnerText);
+                            Console.WriteLine($"{node.InnerText}");
+
+                        }
+                    }
+
+
             }
             else
             {
