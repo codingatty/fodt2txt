@@ -8,11 +8,25 @@ namespace fodt2txt
     {
         static void Main(string[] args)
         {
-            string fodt_contents = getXMLStdinAsString();
+            string fodt_contents = null;
+            XmlDocument doc = null;
+
+            fodt_contents = getXMLStdinAsString();
+            
             if (fodt_contents != null) 
             {
-                firstTry(fodt_contents);
+                doc = makeXMLDoc(fodt_contents);
             }
+
+            if (doc != null)
+            {
+                Console.WriteLine("Yo: {0}", doc.InnerText);
+            }
+            else
+            {
+                Console.WriteLine("Yo, makeXMLDoc failed");
+            }
+
 
             string getXMLStdinAsString(){
                 string stdin = null;
@@ -24,28 +38,43 @@ namespace fodt2txt
                         stdin = reader.ReadToEnd();
                     }
                 }
-                else {
+                else
+                {
                     Console.WriteLine("Console is not really redirected");
                 }
                 return(stdin);
             }
-            
-            void firstTry(string XMLString) {
+
+            XmlDocument makeXMLDoc(string XMLString)
+            {
+                XmlDocument doc = new XmlDocument();
+                try
+                {
+                    doc.LoadXml(XMLString);
+                }
+                catch (System.Xml.XmlException){
+                    doc = null;
+                }
+                return doc;
+            }
+            void firstTry(string XMLString)
+            {
                 byte[] bytes = Encoding.UTF8.GetBytes(XMLString);  
                 using (MemoryStream ms = new MemoryStream(bytes))
                 {
                     using (XmlTextReader reader = new XmlTextReader(ms))
                     {
-                    Console.WriteLine("In the XmlTextReader"); 
-                    while (reader.Read()){
-                        Console.WriteLine("{0}, {1}", reader.NodeType, reader.Name);
-                        /// Console.WriteLine(reader.NodeType);
-                        if (reader.NodeType == XmlNodeType.Text){
-                            //Console.WriteLine("Text node found");
-                            //Console.WriteLine(reader.Name);
-                         }
-
-                    }
+                        Console.WriteLine("In the XmlTextReader"); 
+                        while (reader.Read())
+                        {
+                            Console.WriteLine("{0}, {1}, {2}", reader.NodeType, reader.Name);
+                            /// Console.WriteLine(reader.NodeType);
+                            if (reader.NodeType == XmlNodeType.Text)
+                            {
+                                //Console.WriteLine("Text node found");
+                                //Console.WriteLine(reader.Name);
+                            }
+                        }
                     };
                 }
             }
