@@ -8,21 +8,30 @@ namespace fodt2txt
     {
         static void Main(string[] args)
         {
-            string stdin = null;
-            if (Console.IsInputRedirected)
+            string fodt_contents = getXMLStdinAsString();
+            if (fodt_contents != null) 
             {
-                Console.WriteLine("Console is redirected");
-                using (StreamReader reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
+                firstTry(fodt_contents);
+            }
+
+            string getXMLStdinAsString(){
+                string stdin = null;
+                if (Console.IsInputRedirected)
                 {
-                    stdin = reader.ReadToEnd();
+                    Console.WriteLine("Console is redirected");
+                    using (StreamReader reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
+                    {
+                        stdin = reader.ReadToEnd();
+                    }
                 }
+                else {
+                    Console.WriteLine("Console is not really redirected");
+                }
+                return(stdin);
             }
-            else {
-                 Console.WriteLine("Console is not really redirected");
-            }
-            if (stdin != null) 
-            {
-                byte[] bytes = Encoding.UTF8.GetBytes(stdin);  
+            
+            void firstTry(string XMLString) {
+                byte[] bytes = Encoding.UTF8.GetBytes(XMLString);  
                 using (MemoryStream ms = new MemoryStream(bytes))
                 {
                     using (XmlTextReader reader = new XmlTextReader(ms))
