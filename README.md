@@ -6,11 +6,26 @@ without displaying extraneous XML tags. It's not perfect, but is good enough for
 
 This program is licensed under the [Apache Software License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-usage:
+usage (command line):
 
    `fodt2txt document.fodt`
 
-Any text found inside <text:p> tags is simply dumped to stdout.
+To use in `git`:
+
+1. add the following line to the `.gitattributes` file:
+
+````
+*.fodt diff=fodt
+````
+    
+2. add the following lines to the `git/config` file:
+
+````
+[diff "fodt"]
+    textconv = fodt2txt
+````
+
+Any text found inside `<text:p>` tags is simply dumped to stdout.
 
 Bare-bones, no diagnostic messages. It just lets exceptions occur, otherwise
 it would look like the error message text is the file content.
