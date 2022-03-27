@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using System.Xml;
-namespace fodt2txt
 
 /*
 
@@ -30,64 +29,40 @@ There is no stdout if:
 
 */
 
+namespace fodt2txt
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string fodt_contents = null;
-            XmlDocument doc = null;
-
-            fodt_contents = getXMLStdinAsString();
-
-            if (fodt_contents != null) 
+            string pathname = null;
+            switch (args.Length)
             {
-                doc = makeXMLDoc(fodt_contents);
-            }
-
-            if (doc != null)
-            {
-                // Console.WriteLine("makeXMLDoc worked");
+                case 0:
+                    throw new ArgumentException(string.Format("No arguments provided: exactly one argument is required to indicate pathname of file to process"));
                 
-                XmlNodeList nodes2 = doc.GetElementsByTagName("*");
-                foreach (XmlNode node in nodes2)
-                {
-                    // Console.WriteLine("in foreach"); 
-                    // Console.WriteLine("{0}", node.Name);
-                    if (node.Name == "text:p")
-                    {
-                        // Console.WriteLine("{0}", node.InnerText);
-                        Console.WriteLine($"{node.InnerText}");
-
-                    }
-                }
+                case 1:
+                    pathname = args[0];
+                    break;
+                
+                default:
+                    throw new ArgumentException(string.Format("Too many arguments: exactly one argument required to indicate pathname of file to process"));
             }
 
-            string getXMLStdinAsString(){
-                string stdin = null;
-                if (Console.IsInputRedirected)
-                {
-                    // Console.WriteLine("Console is redirected");
-                    using (StreamReader reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
-                    {
-                        stdin = reader.ReadToEnd();
-                    }
-                }
-                return(stdin);
-            }
-
-            XmlDocument makeXMLDoc(string XMLString)
+            var xmldoc = new XmlDocument();
+            xmldoc.Load(pathname);
+            XmlNodeList nodes2 = xmldoc.GetElementsByTagName("*");
+            foreach (XmlNode node in nodes2)
             {
-                XmlDocument doc = new XmlDocument();
-                try
+                // Console.WriteLine("in foreach"); 
+                // Console.WriteLine("{0}", node.Name);
+                if (node.Name == "text:p")
                 {
-                    doc.LoadXml(XMLString);
+                    // Console.WriteLine("{0}", node.InnerText);
+                    Console.WriteLine($"{node.InnerText}");
+
                 }
-                catch (System.Xml.XmlException){
-                    doc = null;
-                }
-                return doc;
-            }            
+            }
         }
     }
 }
