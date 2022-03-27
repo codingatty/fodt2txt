@@ -1,12 +1,10 @@
 # fodt2txt
-Simple program to read a LibreOffice .fodt file and dump out its text, analogous to what odt2txt does for .odt
+Simple program to read a LibreOffice .fodt file and dump out its text, analogous to what [odt2txt](https://github.com/dstosberg/odt2txt) does for .odt.
 
 I wrote this primarily to be able to get reasonable diffs of .fodt files from a git diff command
 without displaying extraneous XML tags. It's not perfect, but is good enough for my needs.
 
-This program is licensed under Apache License, version 2.0 (January 2004);
-see http://www.apache.org/licenses/LICENSE-2.0
-SPX-License-Identifier: Apache-2.0
+This program is licensed under the [Apache Software License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 usage:
 
@@ -18,5 +16,6 @@ Bare-bones, no diagnostic messages. It just lets exceptions occur, otherwise
 it would look like the error message text is the file content.
 
 Deficiencies:
- Does not catch format changes like italics or bold; nor things like tab characters.
- I may look into doing this sometime in the future
+
+Does not catch format changes like italics or bold; nor things like tab characters.
+I may look into doing this sometime in the future.
