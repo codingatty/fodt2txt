@@ -3,6 +3,33 @@ using System.IO;
 using System.Text;
 using System.Xml;
 namespace fodt2txt
+
+/*
+
+Copyright 2022 Terry Carroll
+
+Simple program to read a LibreOffice .fodt and dump out its text analogous to odt2txt for .odt
+
+I wrote this primarily to be able to get reasonable diffs of .fodt files from a git diff command
+without displaying extraneous XML tags. It's not perfect, but is good enough for my needs.
+
+This program is licensed under Apache License, version 2.0 (January 2004);
+see http://www.apache.org/licenses/LICENSE-2.0
+SPX-License-Identifier: Apache-2.0
+
+usage:
+
+   fodt2txt <document.fodt
+
+Any text found inside <text:p> tags is simply dumped to stdout.
+
+There is no stdout if:
+   there is no stdin;
+   stdin doesn't parse as XML; 
+   or the XML has no <text:p> tags
+
+*/
+
 {
     class Program
     {
@@ -20,56 +47,31 @@ namespace fodt2txt
 
             if (doc != null)
             {
-                Console.WriteLine("makeXMLDoc worked");
-                var ns_manager = new XmlNamespaceManager(doc.NameTable);
-                ns_manager.AddNamespace("text", "urn:oasis:names:tc:opendocument:xmlns:text:1.0");
-            
-                XmlElement root = doc.DocumentElement;
-                if (root.HasChildNodes && false){                   // && false is kludge to skip this, keeping for now in case I need to go back
-                    Console.WriteLine("has child nodes");
-                    XmlNodeList nodes = root.ChildNodes;
-                    // XmlNodeList nodes = root.SelectNodes("text:p", ns_manager);
-                    foreach (XmlNode node in nodes)
-                    {
-                        Console.WriteLine("in foreach");
-                        Console.WriteLine("{0}", node.InnerText);
-                    }
-                }
-
+                // Console.WriteLine("makeXMLDoc worked");
+                
                 XmlNodeList nodes2 = doc.GetElementsByTagName("*");
                 foreach (XmlNode node in nodes2)
+                {
+                    // Console.WriteLine("in foreach"); 
+                    // Console.WriteLine("{0}", node.Name);
+                    if (node.Name == "text:p")
                     {
-                        // Console.WriteLine("in foreach"); 
-                        Console.WriteLine("{0}", node.Name);
-                        if (node.Name == "text:p")
-                        {
-                            // Console.WriteLine("{0}", node.InnerText);
-                            Console.WriteLine($"{node.InnerText}");
+                        // Console.WriteLine("{0}", node.InnerText);
+                        Console.WriteLine($"{node.InnerText}");
 
-                        }
                     }
-
-
+                }
             }
-            else
-            {
-                Console.WriteLine("Yo, makeXMLDoc failed");
-            }
-
 
             string getXMLStdinAsString(){
                 string stdin = null;
                 if (Console.IsInputRedirected)
                 {
-                    Console.WriteLine("Console is redirected");
+                    // Console.WriteLine("Console is redirected");
                     using (StreamReader reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
                     {
                         stdin = reader.ReadToEnd();
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Console is not really redirected");
                 }
                 return(stdin);
             }
@@ -85,28 +87,7 @@ namespace fodt2txt
                     doc = null;
                 }
                 return doc;
-            }
-            void firstTry(string XMLString)
-            {
-                byte[] bytes = Encoding.UTF8.GetBytes(XMLString);  
-                using (MemoryStream ms = new MemoryStream(bytes))
-                {
-                    using (XmlTextReader reader = new XmlTextReader(ms))
-                    {
-                        Console.WriteLine("In the XmlTextReader"); 
-                        while (reader.Read())
-                        {
-                            Console.WriteLine("{0}, {1}, {2}", reader.NodeType, reader.Name);
-                            /// Console.WriteLine(reader.NodeType);
-                            if (reader.NodeType == XmlNodeType.Text)
-                            {
-                                //Console.WriteLine("Text node found");
-                                //Console.WriteLine(reader.Name);
-                            }
-                        }
-                    };
-                }
-            }
+            }            
         }
     }
 }
