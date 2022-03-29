@@ -57,11 +57,8 @@ namespace fodt2txt
             XmlNodeList nodes2 = xmldoc.GetElementsByTagName("*");
             foreach (XmlNode node in nodes2)
             {
-                // Console.WriteLine("in foreach"); 
-                // Console.WriteLine("{0}", node.Name);
                 if (node.Name == "text:p")
                 {
-                    // Console.WriteLine("{0}", node.InnerText);
                     Console.WriteLine($"{node.InnerText}");
 
                 }
