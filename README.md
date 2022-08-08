@@ -27,8 +27,7 @@ To use in `git`:
 
 Any text found inside `<text:p>` tags is simply dumped to stdout.
 
-Bare-bones, no diagnostic messages. It just lets exceptions occur, otherwise
-it would look like the error message text is the file content.
+Bare-bones, almost no diagnostic messages.
 
 Deficiencies:
 
