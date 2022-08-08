@@ -47,14 +47,16 @@ namespace fodt2txt
             switch (args.Length)
             {
                 case 0:
-                    throw new ArgumentException(string.Format("No arguments provided: exactly one argument is required to indicate pathname of file to process"));
+                    Console.Error.WriteLine("No arguments provided: exactly one argument is required to indicate pathname of file to process");
+                    return;
                 
                 case 1:
                     pathname = args[0];
                     break;
                 
                 default:
-                    throw new ArgumentException(string.Format("Too many arguments: exactly one argument required to indicate pathname of file to process"));
+                    Console.Error.WriteLine("Too many arguments: exactly one argument required to indicate pathname of file to process");
+                    return;
             }
 
             var xmldoc = new XmlDocument();
