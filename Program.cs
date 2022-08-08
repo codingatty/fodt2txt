@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
 
+
 /*
 
 Copyright 2022 Terry Carroll
+
 
 Simple program to read a LibreOffice .fodt file and dump out its text,
 analogous to what odt2txt does for .odt
@@ -39,6 +42,8 @@ namespace fodt2txt
         static void Main(string[] args)
         {
             string pathname = null;
+            int LINE_LENGTH = 65;  // 0: do not split lines; any other number split at max indicated length (rounding up to word boundary)
+
             switch (args.Length)
             {
                 case 0:
@@ -59,9 +64,58 @@ namespace fodt2txt
             {
                 if (node.Name == "text:p")
                 {
-                    Console.WriteLine($"{node.InnerText}");
+                    List<string> split_lines = split_up(node.InnerText, LINE_LENGTH);
 
+                    foreach (string line in split_lines)
+                    {
+                        Console.WriteLine($"{line}");
+                    }                   
                 }
+            }
+
+            List<string> split_up(string text, int fragment_length)
+            {
+                List<string> returned_list = new List<string>();
+                if ((fragment_length == 0) || (text.Length <= fragment_length))
+                {
+                    returned_list.Add(text);
+                }
+                else
+                {
+                    string remaining_text = text;
+                    do
+                    {
+                    int splitpoint = get_splitpoint(remaining_text, fragment_length);
+                    string fragment = remaining_text.Substring(0, splitpoint);
+                    returned_list.Add(fragment);
+                    remaining_text = remaining_text.Substring(splitpoint);
+                    } while (remaining_text != "");
+                }
+                return returned_list;
+            }
+
+            int get_splitpoint(string text, int max_length)
+            {
+                // find the place to split into a max_length chunk
+                // if the string is shorter than max_length, use the entire string
+                // otherwise:
+                //   use position after the last blank in the first max_length characters;
+                //   if there are no blanks in that porion, use the first blank occurring *after* max_length;
+                //   if there are no blanks at all, use the entire string
+                int splitpoint;
+                if (text.Length < max_length) splitpoint = text.Length;
+                else 
+                {
+                    var check = text.Substring(0, max_length).LastIndexOf(" ");
+                    if (check != -1) splitpoint = check + 1; // "+1" to split *after* the blank
+                    else
+                    {
+                        check = text.IndexOf(" ", max_length);
+                        if (check != -1) splitpoint = check + 1;
+                        else splitpoint = text.Length;
+                    }
+                }
+                return splitpoint;
             }
         }
     }
